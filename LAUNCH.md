@@ -3,6 +3,8 @@
 Use this to go from local MVP to a real Scotland ads test.
 Success metric: **landing → affiliate click rate** (and paid CPA to outbound click).
 
+For first-time local install, start with **[SETUP.md](SETUP.md)**.
+
 ## 1. Accounts to open
 
 ### Must-have

@@ -23,14 +23,17 @@ Tracked funnel:
 - Vitest + Playwright
 - pnpm
 
-## Quick start
+## Setup
+
+**Staged setup guide:** see **[SETUP.md](SETUP.md)** (prerequisites → install → env → DB → run → optional AI / Viator / Postgres → tests → launch).
+
+Minimum local demo (mock data, no Docker):
 
 ```bash
 pnpm install
 cp .env.example .env
 pnpm db:push
 pnpm db:seed
-pnpm llm:setup   # optional but recommended — starts FreeLLMAPI on :3001
 pnpm dev
 ```
 
@@ -38,8 +41,9 @@ Open:
 
 - Public site: [http://localhost:3000](http://localhost:3000)
 - Admin: [http://localhost:3000/admin](http://localhost:3000/admin)  
-  Default token: `dev-admin-token`
-- FreeLLMAPI dashboard: [http://localhost:3001](http://localhost:3001)
+  Default token: `dev-admin-token` (set `ADMIN_TOKEN` in `.env`)
+
+Optional content AI: `pnpm llm:setup` → FreeLLMAPI at [http://localhost:3001](http://localhost:3001) (details in SETUP.md Stage 5).
 
 ## Provider abstraction
 
@@ -129,16 +133,7 @@ See **[BRAND.md](BRAND.md)** for voice, theme, colour, type, and creative rules 
 
 ## Launch
 
-See **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
-
-```bash
-# FreeLLMAPI (content AI)
-pnpm llm:setup
-
-# Optional local Postgres
-docker compose --profile postgres up -d
-# then switch prisma provider to postgresql and set DATABASE_URL
-```
+See **[SETUP.md](SETUP.md)** for local stages and **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
 
 ## Notes
 
