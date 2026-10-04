@@ -110,6 +110,10 @@ pnpm build
 pnpm test:e2e
 ```
 
+## Brand
+
+See **[BRAND.md](BRAND.md)** for voice, theme, colour, type, and creative rules so ads, social, and landing pages stay consistent.
+
 ## Launch
 
 See **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
