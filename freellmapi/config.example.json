@@ -1,0 +1,23 @@
+{
+  "admin": {
+    "email": "admin@localhost",
+    "password": "change-me-min-8-chars"
+  },
+  "keys": [
+    {
+      "platform": "groq",
+      "key": "gsk_REPLACE_ME",
+      "label": "groq-free",
+      "enabled": false
+    },
+    {
+      "platform": "google",
+      "key": "AIza_REPLACE_ME",
+      "label": "google-ai-studio-free",
+      "enabled": false
+    }
+  ],
+  "routing": {
+    "strategy": "balanced"
+  }
+}
