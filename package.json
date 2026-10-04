@@ -15,7 +15,12 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
     "postinstall": "prisma generate",
-    "setup": "prisma migrate deploy && tsx prisma/seed.ts"
+    "setup": "prisma migrate deploy && tsx prisma/seed.ts",
+    "llm:setup": "bash scripts/setup-freellmapi.sh",
+    "llm:up": "bash -c 'test -f freellmapi/.env || exec bash scripts/setup-freellmapi.sh; docker compose --profile llm up -d freellmapi'",
+    "llm:down": "docker compose --profile llm stop freellmapi",
+    "llm:logs": "docker compose --profile llm logs -f freellmapi",
+    "llm:smoke": "node scripts/smoke-content-ai.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai-compatible": "^3.0.62",

@@ -26,15 +26,19 @@ function envFlag(name: string, fallback: boolean): boolean {
   return ["1", "true", "yes", "on"].includes(raw.toLowerCase());
 }
 
-/** Read OpenAI-compatible content AI settings from env. */
+/**
+ * Read OpenAI-compatible content AI settings from env.
+ * Local default path is FreeLLMAPI (`pnpm llm:setup` → http://127.0.0.1:3001/v1).
+ */
 export function getContentAiConfig(): ContentAiConfig {
   const baseURL = (process.env.CONTENT_AI_BASE_URL ?? "").trim().replace(/\/+$/, "");
   const apiKey = (process.env.CONTENT_AI_API_KEY ?? "").trim() || undefined;
-  const model = (process.env.CONTENT_AI_MODEL ?? "gpt-4o-mini").trim() || "gpt-4o-mini";
+  const model = (process.env.CONTENT_AI_MODEL ?? "auto:cheap").trim() || "auto:cheap";
   const explicitlyEnabled = envFlag("CONTENT_AI_ENABLED", false);
   // Auto-enable when a base URL is set (key optional for local proxies like Ollama).
   const enabled = explicitlyEnabled || Boolean(baseURL);
-  const supportsStructuredOutputs = envFlag("CONTENT_AI_STRUCTURED_OUTPUTS", true);
+  // Free-tier routers often lack native JSON schema; prefer prompt JSON unless opted in.
+  const supportsStructuredOutputs = envFlag("CONTENT_AI_STRUCTURED_OUTPUTS", false);
 
   return {
     enabled: enabled && Boolean(baseURL),

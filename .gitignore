@@ -33,6 +33,11 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+!freellmapi/.env.example
+
+# FreeLLMAPI local secrets / declarative keys (keep the committed empty config.json)
+freellmapi/.env
+freellmapi/config.local.json
 
 # local database
 /prisma/*.db
