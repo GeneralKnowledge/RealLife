@@ -41,6 +41,14 @@ describe("getContentAiConfig", () => {
     expect(config.baseURL).toBe("https://llm.example.com/v1");
     expect(config.model).toBe("my-model");
     expect(config.apiKey).toBeUndefined();
+    expect(config.supportsStructuredOutputs).toBe(false);
+  });
+
+  it("defaults model to auto:cheap for FreeLLMAPI-style routers", () => {
+    for (const key of KEYS) delete process.env[key];
+    process.env.CONTENT_AI_BASE_URL = "http://127.0.0.1:3001/v1";
+
+    expect(getContentAiConfig().model).toBe("auto:cheap");
   });
 
   it("keeps api key when provided", () => {
@@ -49,6 +57,14 @@ describe("getContentAiConfig", () => {
     process.env.CONTENT_AI_API_KEY = "sk-test";
 
     expect(getContentAiConfig().apiKey).toBe("sk-test");
+  });
+
+  it("opts into structured outputs when requested", () => {
+    for (const key of KEYS) delete process.env[key];
+    process.env.CONTENT_AI_BASE_URL = "https://api.openai.com/v1";
+    process.env.CONTENT_AI_STRUCTURED_OUTPUTS = "true";
+
+    expect(getContentAiConfig().supportsStructuredOutputs).toBe(true);
   });
 
   it("does not enable when only CONTENT_AI_ENABLED=true without base URL", () => {

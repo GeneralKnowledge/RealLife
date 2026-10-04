@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
+    profiles: ["postgres"]
     ports:
       - "5432:5432"
     environment:
@@ -11,5 +12,43 @@ services:
     volumes:
       - getoutside_pg:/var/lib/postgresql/data
 
+  # Cheap local LLM router for content AI testing.
+  # Upstream: https://github.com/tashfeenahmed/freellmapi
+  freellmapi:
+    image: ghcr.io/tashfeenahmed/freellmapi:latest
+    restart: unless-stopped
+    profiles: ["llm"]
+    env_file:
+      - path: ./freellmapi/.env
+        required: false
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      # Prefer freellmapi/.env; fall back to project .env substitution after `pnpm llm:setup`.
+      ENCRYPTION_KEY: ${FREELLMAPI_ENCRYPTION_KEY:-}
+      # Applied on boot (committed freellmapi/config.json is a safe empty default).
+      FREEAPI_CONFIG_PATH: /config/config.json
+    ports:
+      # Bound to localhost by default — FreeLLMAPI is single-user.
+      - "${FREELLMAPI_HOST_BIND:-127.0.0.1}:3001:3001"
+    volumes:
+      - freellmapi-data:/app/server/data
+      - ./freellmapi:/config:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/api/ping').then((res) => { if (!res.ok) process.exit(1); }).catch(() => process.exit(1));",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
 volumes:
   getoutside_pg:
+  freellmapi-data:

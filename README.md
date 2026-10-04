@@ -19,6 +19,7 @@ Tracked funnel:
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Prisma + SQLite (local)
+- FreeLLMAPI ([tashfeenahmed/freellmapi](https://github.com/tashfeenahmed/freellmapi)) for cheap local content AI
 - Vitest + Playwright
 - pnpm
 
@@ -29,6 +30,7 @@ pnpm install
 cp .env.example .env
 pnpm db:push
 pnpm db:seed
+pnpm llm:setup   # optional but recommended — starts FreeLLMAPI on :3001
 pnpm dev
 ```
 
@@ -37,6 +39,7 @@ Open:
 - Public site: [http://localhost:3000](http://localhost:3000)
 - Admin: [http://localhost:3000/admin](http://localhost:3000/admin)  
   Default token: `dev-admin-token`
+- FreeLLMAPI dashboard: [http://localhost:3001](http://localhost:3001)
 
 ## Provider abstraction
 
@@ -91,16 +94,26 @@ Every creative gets an automatic multi-platform pack:
 - Facebook
 - TikTok
 
-By default captions use templates. Point an **OpenAI-compatible** Chat Completions API at the app to upgrade headlines + captions:
+By default captions use templates. For AI headlines + captions locally, use **FreeLLMAPI** (free-tier router, OpenAI-compatible `/v1`):
 
 ```bash
-CONTENT_AI_BASE_URL=https://your-api.example/v1
-CONTENT_AI_API_KEY=...          # optional for local proxies
-CONTENT_AI_MODEL=gpt-4o-mini
-# or Ollama: CONTENT_AI_BASE_URL=http://127.0.0.1:11434/v1 CONTENT_AI_MODEL=llama3.2
+pnpm llm:setup
+# Open http://localhost:3001 → add free provider keys (Groq, Google AI Studio, …)
+# Copy the unified freellmapi-… key into .env:
+
+CONTENT_AI_BASE_URL=http://127.0.0.1:3001/v1
+CONTENT_AI_API_KEY=freellmapi-YOUR_UNIFIED_KEY
+CONTENT_AI_MODEL=auto:cheap
+CONTENT_AI_STRUCTURED_OUTPUTS=false
+
+pnpm llm:smoke   # optional connectivity check
 ```
 
-When the model call fails, generation falls back to templates. Regenerate anytime from Admin → Social or a creative detail page.
+Helpers: `pnpm llm:up` / `pnpm llm:down` / `pnpm llm:logs`.
+
+Declarative provider keys (optional): edit `freellmapi/config.example.json` → `freellmapi/config.json`, then `pnpm llm:up`. See the [FreeLLMAPI install docs](https://github.com/tashfeenahmed/freellmapi/blob/main/docs/en/install/01-install.md).
+
+Other OpenAI-compatible backends still work (OpenAI, OpenRouter, Ollama). When the model call fails, generation falls back to templates. Regenerate anytime from Admin → Social or a creative detail page.
 
 ## Tests
 
@@ -115,8 +128,11 @@ pnpm test:e2e
 See **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
 
 ```bash
+# FreeLLMAPI (content AI)
+pnpm llm:setup
+
 # Optional local Postgres
-docker compose up -d
+docker compose --profile postgres up -d
 # then switch prisma provider to postgresql and set DATABASE_URL
 ```
 
