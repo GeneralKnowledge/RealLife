@@ -19,7 +19,7 @@ Tracked funnel:
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Prisma + SQLite (local)
-- FreeLLMAPI ([tashfeenahmed/freellmapi](https://github.com/tashfeenahmed/freellmapi)) for cheap local content AI
+- Content AI via OpenRouter (OpenAI-compatible; upgrade path: OpenAI)
 - Vitest + Playwright
 - pnpm
 
@@ -43,7 +43,7 @@ Open:
 - Admin: [http://localhost:3000/admin](http://localhost:3000/admin)  
   Default token: `dev-admin-token` (set `ADMIN_TOKEN` in `.env`)
 
-Optional content AI: `pnpm llm:setup` → FreeLLMAPI at [http://localhost:3001](http://localhost:3001) (details in SETUP.md Stage 5).
+Optional content AI: set OpenRouter keys in `.env` (see SETUP.md Stage 5).
 
 ## Provider abstraction
 
@@ -98,26 +98,28 @@ Every creative gets an automatic multi-platform pack:
 - Facebook
 - TikTok
 
-By default captions use templates. For AI headlines + captions locally, use **FreeLLMAPI** (free-tier router, OpenAI-compatible `/v1`):
+By default captions use templates. For AI headlines + captions, use **OpenRouter** (works locally and on Vercel; same key can serve other projects):
 
 ```bash
-pnpm llm:setup
-# Open http://localhost:3001 → add free provider keys (Groq, Google AI Studio, …)
-# Copy the unified freellmapi-… key into .env:
-
-CONTENT_AI_BASE_URL=http://127.0.0.1:3001/v1
-CONTENT_AI_API_KEY=freellmapi-YOUR_UNIFIED_KEY
-CONTENT_AI_MODEL=auto:cheap
-CONTENT_AI_STRUCTURED_OUTPUTS=false
+# https://openrouter.ai/keys
+CONTENT_AI_BASE_URL=https://openrouter.ai/api/v1
+CONTENT_AI_API_KEY=sk-or-...
+CONTENT_AI_MODEL=openai/gpt-4o-mini
+CONTENT_AI_STRUCTURED_OUTPUTS=true
 
 pnpm llm:smoke   # optional connectivity check
 ```
 
-Helpers: `pnpm llm:up` / `pnpm llm:down` / `pnpm llm:logs`.
+Upgrade to OpenAI later (same app code — swap env only):
 
-Declarative provider keys (optional): edit `freellmapi/config.example.json` → `freellmapi/config.json`, then `pnpm llm:up`. See the [FreeLLMAPI install docs](https://github.com/tashfeenahmed/freellmapi/blob/main/docs/en/install/01-install.md).
+```bash
+CONTENT_AI_BASE_URL=https://api.openai.com/v1
+CONTENT_AI_API_KEY=sk-...
+CONTENT_AI_MODEL=gpt-4o-mini
+CONTENT_AI_STRUCTURED_OUTPUTS=true
+```
 
-Other OpenAI-compatible backends still work (OpenAI, OpenRouter, Ollama). When the model call fails, generation falls back to templates. Regenerate anytime from Admin → Social or a creative detail page.
+Optional laptop-only free-tier router: `pnpm llm:setup` (FreeLLMAPI on `:3001`) — not for Vercel. When the model call fails, generation falls back to templates. Regenerate anytime from Admin → Social or a creative detail page.
 
 ## Tests
 

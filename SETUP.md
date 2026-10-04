@@ -11,12 +11,12 @@ Install these before anything else:
 | [Node.js](https://nodejs.org/) | **22** (matches CI) |
 | [pnpm](https://pnpm.io/) | **10.33.3** (`corepack enable` then `corepack prepare pnpm@10.33.3 --activate`) |
 | Git | Any recent version |
-| [Docker](https://docs.docker.com/get-docker/) | Only needed for FreeLLMAPI (Stage 5) or local Postgres (Stage 7) |
+| [Docker](https://docs.docker.com/get-docker/) | Only needed for optional local FreeLLMAPI or Postgres (Stage 7) |
 
 Optional later:
 
+- [OpenRouter](https://openrouter.ai/keys) API key for content AI (Stage 5)
 - Viator Partner API key + affiliate ID (Stage 6)
-- Free-tier LLM keys (Groq, Google AI Studio, etc.) for FreeLLMAPI (Stage 5)
 
 ## Stage 1 — Clone and install
 
@@ -89,46 +89,53 @@ You now have a working local MVP. Stages below are optional.
 
 ---
 
-## Stage 5 — Content AI (FreeLLMAPI) — optional
+## Stage 5 — Content AI (OpenRouter) — optional
 
 Enables AI headlines and multi-platform social captions. Without this, creatives fall back to templates.
 
-Requires Docker.
+**Recommended provider: [OpenRouter](https://openrouter.ai/)** — always available, works on your laptop and on Vercel, and one key can serve other projects. Upgrade later to OpenAI by swapping env vars only.
+
+1. Create a key at [openrouter.ai/keys](https://openrouter.ai/keys)
+2. Put these in `.env` (already stubbed in `.env.example`):
+
+```bash
+CONTENT_AI_BASE_URL=https://openrouter.ai/api/v1
+CONTENT_AI_API_KEY=sk-or-YOUR_KEY
+CONTENT_AI_MODEL=openai/gpt-4o-mini
+CONTENT_AI_STRUCTURED_OUTPUTS=true
+```
+
+3. Restart `pnpm dev` if it was already running
+4. Optional connectivity check: `pnpm llm:smoke`
+5. In admin, generate a creative or regenerate a social pack
+
+### Upgrade path — OpenAI
+
+Same code path; only env changes:
+
+```bash
+CONTENT_AI_BASE_URL=https://api.openai.com/v1
+CONTENT_AI_API_KEY=sk-...
+CONTENT_AI_MODEL=gpt-4o-mini
+CONTENT_AI_STRUCTURED_OUTPUTS=true
+```
+
+### Optional — local FreeLLMAPI (laptop only)
+
+Docker free-tier router if you want zero cloud LLM spend while developing:
 
 ```bash
 pnpm llm:setup
-```
+# dashboard http://127.0.0.1:3001 → add Groq / Google keys → copy freellmapi-… key
 
-That script will:
-
-1. Create `freellmapi/.env` with an encryption key
-2. Start FreeLLMAPI on [http://127.0.0.1:3001](http://127.0.0.1:3001)
-3. Stub `CONTENT_AI_*` in your app `.env` if missing
-
-Then:
-
-1. Open the FreeLLMAPI dashboard → add free provider keys (or copy `freellmapi/config.example.json` → `freellmapi/config.json` and restart)
-2. Copy the unified `freellmapi-…` key from the Keys page into `.env`:
-
-```bash
 CONTENT_AI_BASE_URL=http://127.0.0.1:3001/v1
 CONTENT_AI_API_KEY=freellmapi-YOUR_UNIFIED_KEY
 CONTENT_AI_MODEL=auto:cheap
 CONTENT_AI_STRUCTURED_OUTPUTS=false
 ```
 
-3. Restart `pnpm dev` if it was already running
-4. Optional connectivity check: `pnpm llm:smoke`
-
-Day-to-day helpers:
-
-```bash
-pnpm llm:up      # start (or run setup if .env missing)
-pnpm llm:down    # stop
-pnpm llm:logs    # follow logs
-```
-
-Other OpenAI-compatible backends (OpenAI, OpenRouter, Ollama) also work via the same `CONTENT_AI_*` vars — see comments in `.env.example`.
+Helpers: `pnpm llm:up` / `pnpm llm:down` / `pnpm llm:logs`.  
+Do **not** point Vercel at `127.0.0.1` — use OpenRouter (or OpenAI) in production.
 
 ## Stage 6 — Live Viator activities — optional
 
@@ -198,7 +205,11 @@ Install Playwright browsers once if needed: `pnpm exec playwright install`.
 
 ## Stage 9 — Production / paid traffic
 
+<<<<<<< HEAD
 Do **not** treat local FreeLLMAPI as a public production service.
+=======
+Use the same OpenRouter (or OpenAI) `CONTENT_AI_*` values on Vercel — not local FreeLLMAPI. For deploy, domains, Neon/Supabase, Vercel, Meta ads, and the pre-paid checklist, follow **[LAUNCH.md](LAUNCH.md)**.
+>>>>>>> origin/main
 
 - **Backend deploy (Vercel + Neon):** **[DEPLOY.md](DEPLOY.md)**
 - **Accounts, domains, paid-traffic checklist:** **[LAUNCH.md](LAUNCH.md)**
@@ -211,7 +222,7 @@ Do **not** treat local FreeLLMAPI as a public production service.
 | Goal | Stages |
 |---|---|
 | Local demo (mock data) | 0 → 4 |
-| + AI social captions | + 5 |
+| + AI social captions (OpenRouter) | + 5 |
 | + Real Viator inventory | + 6 |
 | + Local Postgres | + 7 |
 | Production backend | → [DEPLOY.md](DEPLOY.md) |
