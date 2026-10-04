@@ -56,7 +56,10 @@ export default async function AdminCreativesPage() {
                   </Link>
                 </div>
                 <p className="break-all text-xs text-neutral-500">
-                  Click URL: {appUrl(`/api/go/${creative.slug}`)}
+                  Click URL:{" "}
+                  {appUrl(
+                    `/api/go/${creative.slug}?utm_source=meta&utm_medium=paid&utm_campaign=${creative.slug}`,
+                  )}
                 </p>
               </div>
             </article>

@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { GenerateSocialButton } from "@/components/GenerateSocialButton";
 import { SocialPostCard } from "@/components/SocialPostCard";
-import { getExpectedAdminToken } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { appUrl } from "@/lib/creatives";
 
@@ -27,7 +26,6 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const adminToken = getExpectedAdminToken();
   const counts = {
     impressions: creative.events.filter((event) => event.type === "creative_impression").length,
     clicks: creative.events.filter((event) => event.type === "creative_click").length,
@@ -45,11 +43,20 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
           <h2 className="mt-2 text-2xl font-semibold tracking-tight">{creative.headline}</h2>
           <p className="text-sm text-neutral-600">{creative.activity.title}</p>
         </div>
-        <GenerateSocialButton
-          adminToken={adminToken}
-          creativeId={creative.id}
-          label={creative.socialPosts.length > 0 ? "Regenerate social pack" : "Generate social pack"}
-        />
+        <div className="flex flex-wrap gap-3">
+          <a
+            href={`/api/og/pack/${creative.slug}`}
+            className="rounded-lg border border-neutral-300 px-3 py-1.5 text-xs font-medium hover:bg-neutral-100"
+          >
+            Download ad pack
+          </a>
+          <GenerateSocialButton
+            creativeId={creative.id}
+            label={
+              creative.socialPosts.length > 0 ? "Regenerate social pack" : "Generate social pack"
+            }
+          />
+        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -87,7 +94,29 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
               <dt className="text-neutral-500">Landing URL</dt>
               <dd className="break-all">{appUrl(`/escape/${creative.slug}`)}</dd>
             </div>
+            <div>
+              <dt className="text-neutral-500">OG / ad images</dt>
+              <dd className="space-y-1 break-all text-xs">
+                <a className="underline" href={`/api/og/creative/${creative.slug}?format=square`}>
+                  Square
+                </a>
+                {" · "}
+                <a className="underline" href={`/api/og/creative/${creative.slug}?format=story`}>
+                  Story
+                </a>
+                {" · "}
+                <a className="underline" href={`/api/og/creative/${creative.slug}?format=og`}>
+                  Open Graph
+                </a>
+              </dd>
+            </div>
           </dl>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/api/og/creative/${creative.slug}?format=square`}
+            alt="Generated square creative"
+            className="mt-2 aspect-square w-full max-w-xs rounded-lg border border-neutral-200 object-cover"
+          />
 
           <div className="grid grid-cols-2 gap-3 pt-2">
             <div className="rounded-lg bg-neutral-50 p-3">

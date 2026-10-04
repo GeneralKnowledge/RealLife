@@ -59,9 +59,18 @@ VIATOR_DESTINATION_ID=22
 Sync inventory from the admin Activities page, or:
 
 ```bash
+# After logging into /admin (cookie session), or with header for scripts:
 curl -X POST http://localhost:3000/api/sync \
-  -H "x-admin-token: dev-admin-token"
+  -H "x-admin-token: $ADMIN_TOKEN"
 ```
+
+Composited creatives (for ads / link previews):
+
+```text
+/api/og/creative/<slug>?format=square|story|og
+```
+
+Download zip (admin session required): `/api/og/pack/<slug>`
 
 ## Admin flow
 
@@ -92,8 +101,19 @@ pnpm build
 pnpm test:e2e
 ```
 
+## Launch
+
+See **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
+
+```bash
+# Optional local Postgres
+docker compose up -d
+# then switch prisma provider to postgresql and set DATABASE_URL
+```
+
 ## Notes
 
 - No auth product, payments, or in-app booking — affiliate handoff only
 - Additional providers can implement `ActivityProvider` without changing the UI
-- SQLite keeps local setup to a handful of commands; swap `DATABASE_URL` for Postgres later if needed
+- SQLite for local; Postgres (Neon/Supabase) for production — see LAUNCH.md
+- Admin APIs authenticate via httpOnly session cookie (no token in client HTML)

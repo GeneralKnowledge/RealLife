@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { GenerateSocialButton } from "@/components/GenerateSocialButton";
 import { SocialPostCard } from "@/components/SocialPostCard";
-import { getExpectedAdminToken } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminSocialPage() {
-  const adminToken = getExpectedAdminToken();
   const creatives = await prisma.creative.findMany({
     where: { status: "published" },
     include: {
@@ -60,7 +58,6 @@ export default async function AdminSocialPage() {
                   Creative details
                 </Link>
                 <GenerateSocialButton
-                  adminToken={adminToken}
                   creativeId={creative.id}
                   label={
                     creative.socialPosts.length > 0

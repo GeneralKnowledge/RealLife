@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { assertAdminToken } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin";
 import { createCreativeFromActivity } from "@/lib/creatives";
 import { generateSocialPostsForCreative } from "@/lib/social";
 import { prisma } from "@/lib/db";
@@ -11,8 +11,7 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const token = request.headers.get("x-admin-token");
-  if (!assertAdminToken(token)) {
+  if (!(await requireAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -23,9 +22,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    let creativeId = parsed.data.creativeId;
-
-    if (!creativeId && parsed.data.activityId) {
+    if (!parsed.data.creativeId && parsed.data.activityId) {
       const creative = await createCreativeFromActivity(parsed.data.activityId);
       return NextResponse.json({
         creative,
@@ -33,20 +30,22 @@ export async function POST(request: Request) {
       });
     }
 
-    if (!creativeId) {
+    if (!parsed.data.creativeId) {
       return NextResponse.json(
         { error: "creativeId or activityId is required" },
         { status: 400 },
       );
     }
 
-    const exists = await prisma.creative.findUnique({ where: { id: creativeId } });
+    const exists = await prisma.creative.findUnique({
+      where: { id: parsed.data.creativeId },
+    });
     if (!exists) {
       return NextResponse.json({ error: "Creative not found" }, { status: 404 });
     }
 
-    const socialPosts = await generateSocialPostsForCreative(creativeId);
-    return NextResponse.json({ creativeId, socialPosts });
+    const socialPosts = await generateSocialPostsForCreative(parsed.data.creativeId);
+    return NextResponse.json({ creativeId: parsed.data.creativeId, socialPosts });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to generate social posts";
     return NextResponse.json({ error: message }, { status: 500 });

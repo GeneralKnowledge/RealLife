@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function SyncButton({ adminToken }: { adminToken: string }) {
+export function SyncButton() {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -11,11 +11,12 @@ export function SyncButton({ adminToken }: { adminToken: string }) {
   async function sync() {
     setLoading(true);
     setMessage(null);
-    const response = await fetch("/api/sync", {
-      method: "POST",
-      headers: { "x-admin-token": adminToken },
-    });
-    const data = (await response.json()) as { upserted?: number; provider?: string; error?: string };
+    const response = await fetch("/api/sync", { method: "POST" });
+    const data = (await response.json()) as {
+      upserted?: number;
+      provider?: string;
+      error?: string;
+    };
     setLoading(false);
 
     if (!response.ok) {

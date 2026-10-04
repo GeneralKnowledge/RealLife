@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { ADMIN_COOKIE, assertAdminToken } from "@/lib/admin";
+import { ADMIN_COOKIE, adminCookieOptions, assertAdminToken } from "@/lib/admin";
 
 const bodySchema = z.object({
   token: z.string().min(1),
@@ -14,11 +14,6 @@ export async function POST(request: Request) {
   }
 
   const response = NextResponse.json({ ok: true });
-  response.cookies.set(ADMIN_COOKIE, parsed.data.token, {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 14,
-  });
+  response.cookies.set(ADMIN_COOKIE, parsed.data.token, adminCookieOptions());
   return response;
 }

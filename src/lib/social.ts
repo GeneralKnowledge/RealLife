@@ -1,6 +1,6 @@
 import type { Activity as DbActivity, Creative } from "@prisma/client";
 import { prisma } from "./db";
-import { appUrl } from "./creatives";
+import { platformUtm, trackedGoUrl } from "./urls";
 
 export const SOCIAL_PLATFORMS = [
   "instagram",
@@ -59,11 +59,14 @@ export function buildSocialPack(
   creative: Creative,
   activity: DbActivity,
 ): SocialPostDraft[] {
-  const link = appUrl(`/api/go/${creative.slug}`);
   const hashtags = activityHashtags(activity);
   const hashtagBlock = hashtags.join(" ");
   const priceBit = creative.priceLine ?? `From ${activity.currency} ${activity.priceFrom}`;
   const place = activity.location;
+
+  function linkFor(platform: SocialPlatform) {
+    return trackedGoUrl(creative.slug, platformUtm(platform));
+  }
 
   const longBody = [
     creative.headline,
@@ -73,11 +76,6 @@ export function buildSocialPack(
     `${priceBit}.`,
     "",
     "Link in bio — or tap through and book it.",
-  ].join("\n");
-
-  const shortBody = [
-    `${creative.headline} ${place}. ${priceBit}.`,
-    `Get outside → ${link}`,
   ].join("\n");
 
   const storyBody = [
@@ -97,6 +95,14 @@ export function buildSocialPack(
     hashtagBlock,
   ].join("\n");
 
+  const xLink = linkFor("x");
+  const shortBody = [
+    `${creative.headline} ${place}. ${priceBit}.`,
+    `Get outside → ${xLink}`,
+  ].join("\n");
+
+  const fbLink = linkFor("facebook");
+
   const drafts: SocialPostDraft[] = [
     {
       platform: "instagram",
@@ -104,7 +110,7 @@ export function buildSocialPack(
       caption: `${longBody}\n\n${hashtagBlock}`,
       hashtags: hashtagBlock,
       ctaLabel: creative.ctaLabel,
-      ctaUrl: link,
+      ctaUrl: linkFor("instagram"),
       imageUrl: creative.imageUrl,
     },
     {
@@ -113,7 +119,7 @@ export function buildSocialPack(
       caption: storyBody,
       hashtags: hashtagBlock,
       ctaLabel: "Book this escape",
-      ctaUrl: link,
+      ctaUrl: linkFor("instagram_story"),
       imageUrl: creative.imageUrl,
     },
     {
@@ -122,7 +128,7 @@ export function buildSocialPack(
       caption: trimToLimit(`${shortBody}\n${hashtags.slice(0, 3).join(" ")}`, 260),
       hashtags: hashtags.slice(0, 3).join(" "),
       ctaLabel: creative.ctaLabel,
-      ctaUrl: link,
+      ctaUrl: xLink,
       imageUrl: creative.imageUrl,
     },
     {
@@ -136,13 +142,13 @@ export function buildSocialPack(
         `📍 ${place}`,
         `💸 ${priceBit}`,
         "",
-        `Book here: ${link}`,
+        `Book here: ${fbLink}`,
         "",
         hashtagBlock,
       ].join("\n"),
       hashtags: hashtagBlock,
       ctaLabel: creative.ctaLabel,
-      ctaUrl: link,
+      ctaUrl: fbLink,
       imageUrl: creative.imageUrl,
     },
     {
@@ -151,7 +157,7 @@ export function buildSocialPack(
       caption: tiktokBody,
       hashtags: hashtagBlock,
       ctaLabel: "Link in bio",
-      ctaUrl: link,
+      ctaUrl: linkFor("tiktok"),
       imageUrl: creative.imageUrl,
     },
   ];

@@ -4,12 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function GenerateSocialButton({
-  adminToken,
   creativeId,
   activityId,
   label = "Generate social pack",
 }: {
-  adminToken: string;
   creativeId?: string;
   activityId?: string;
   label?: string;
@@ -24,10 +22,7 @@ export function GenerateSocialButton({
 
     const response = await fetch("/api/social/generate", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-token": adminToken,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ creativeId, activityId }),
     });
 

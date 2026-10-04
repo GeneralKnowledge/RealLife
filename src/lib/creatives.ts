@@ -3,6 +3,8 @@ import type { Activity as DbActivity } from "@prisma/client";
 import { prisma } from "./db";
 import { generateSocialPostsForCreative } from "./social";
 
+export { appUrl, trackedGoUrl } from "./urls";
+
 const slugId = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 8);
 
 const HEADLINES = [
@@ -89,9 +91,4 @@ export async function createCreativeFromActivity(activityId: string) {
     where: { id: creative.id },
     include: { activity: true, socialPosts: true },
   });
-}
-
-export function appUrl(path = ""): string {
-  const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-  return `${base.replace(/\/$/, "")}${path}`;
 }

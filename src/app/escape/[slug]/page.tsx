@@ -1,12 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TrackBeacon } from "@/components/TrackBeacon";
 import { prisma } from "@/lib/db";
+import { appUrl } from "@/lib/urls";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 function formatMoney(amount: number, currency: string) {
@@ -17,8 +20,49 @@ function formatMoney(amount: number, currency: string) {
   }).format(amount);
 }
 
-export default async function EscapePage({ params }: PageProps) {
+function str(value: string | string[] | undefined) {
+  return typeof value === "string" ? value : undefined;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
+  const creative = await prisma.creative.findUnique({
+    where: { slug },
+    include: { activity: true },
+  });
+
+  if (!creative) {
+    return { title: "Escape not found" };
+  }
+
+  const title = `${creative.locationLine ?? creative.activity.location} · ${creative.headline}`;
+  const description =
+    creative.subheadline ??
+    creative.activity.shortDescription ??
+    creative.activity.description.slice(0, 160);
+  const ogImage = appUrl(`/api/og/creative/${creative.slug}?format=og`);
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: appUrl(`/escape/${creative.slug}`),
+      images: [{ url: ogImage, width: 1200, height: 630, alt: creative.headline }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
+
+export default async function EscapePage({ params, searchParams }: PageProps) {
+  const { slug } = await params;
+  const query = await searchParams;
   const creative = await prisma.creative.findUnique({
     where: { slug },
     include: { activity: true },
@@ -29,7 +73,12 @@ export default async function EscapePage({ params }: PageProps) {
   }
 
   const { activity } = creative;
-  const bookHref = `/api/affiliate/${activity.id}?creativeId=${creative.id}`;
+  const affiliateParams = new URLSearchParams({ creativeId: creative.id });
+  for (const key of ["utm_source", "utm_medium", "utm_campaign", "utm_content"] as const) {
+    const value = str(query[key]);
+    if (value) affiliateParams.set(key, value);
+  }
+  const bookHref = `/api/affiliate/${activity.id}?${affiliateParams.toString()}`;
 
   return (
     <main className="relative min-h-[100svh] overflow-hidden grain">

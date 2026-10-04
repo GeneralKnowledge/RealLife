@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { assertAdminToken } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin";
 import { createCreativeFromActivity } from "@/lib/creatives";
 
 const bodySchema = z.object({
@@ -8,8 +8,7 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const token = request.headers.get("x-admin-token");
-  if (!assertAdminToken(token)) {
+  if (!(await requireAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

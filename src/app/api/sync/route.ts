@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { assertAdminToken } from "@/lib/admin";
+import { requireAdmin } from "@/lib/admin";
 import { syncActivitiesFromProvider } from "@/lib/activities";
 
 export async function POST(request: Request) {
-  const token =
-    request.headers.get("x-admin-token") ??
-    new URL(request.url).searchParams.get("token");
-
-  if (!assertAdminToken(token)) {
+  if (!(await requireAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

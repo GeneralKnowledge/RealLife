@@ -54,6 +54,7 @@ describe("buildSocialPack", () => {
     ]);
     expect(pack.every((post) => post.caption.includes("YOUR BED"))).toBe(true);
     expect(pack.every((post) => post.ctaUrl.includes("/api/go/loch-lomond-escape"))).toBe(true);
+    expect(pack.every((post) => post.ctaUrl.includes("utm_source="))).toBe(true);
     expect(pack.find((post) => post.platform === "x")?.caption.length).toBeLessThanOrEqual(260);
     expect(pack.find((post) => post.platform === "instagram")?.hashtags).toContain("#GetOutside");
   });

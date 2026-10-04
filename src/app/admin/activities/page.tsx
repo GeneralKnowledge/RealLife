@@ -4,7 +4,6 @@ import { GenerateCreativeButton } from "@/components/GenerateCreativeButton";
 import { GenerateSocialButton } from "@/components/GenerateSocialButton";
 import { SyncButton } from "@/components/SyncButton";
 import { listActivities } from "@/lib/activities";
-import { getExpectedAdminToken } from "@/lib/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -34,8 +33,6 @@ export default async function AdminActivitiesPage({ searchParams }: PageProps) {
     minRating: num(params.minRating),
     query: str(params.query),
   });
-  const adminToken = getExpectedAdminToken();
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -45,7 +42,7 @@ export default async function AdminActivitiesPage({ searchParams }: PageProps) {
             Scotland outdoor inventory cached locally from the configured provider.
           </p>
         </div>
-        <SyncButton adminToken={adminToken} />
+        <SyncButton />
       </div>
 
       <Suspense fallback={<div className="text-sm text-neutral-500">Loading filters…</div>}>
@@ -96,12 +93,8 @@ export default async function AdminActivitiesPage({ searchParams }: PageProps) {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-2">
-                      <GenerateCreativeButton activityId={activity.id} adminToken={adminToken} />
-                      <GenerateSocialButton
-                        activityId={activity.id}
-                        adminToken={adminToken}
-                        label="Creative + social"
-                      />
+                      <GenerateCreativeButton activityId={activity.id} />
+                      <GenerateSocialButton activityId={activity.id} label="Creative + social" />
                     </div>
                   </td>
                 </tr>

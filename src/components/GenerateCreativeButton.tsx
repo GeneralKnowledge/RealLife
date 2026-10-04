@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function GenerateCreativeButton({
-  activityId,
-  adminToken,
-}: {
-  activityId: string;
-  adminToken: string;
-}) {
+export function GenerateCreativeButton({ activityId }: { activityId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,10 +13,7 @@ export function GenerateCreativeButton({
     setError(null);
     const response = await fetch("/api/creatives", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-admin-token": adminToken,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activityId }),
     });
     const data = (await response.json()) as {

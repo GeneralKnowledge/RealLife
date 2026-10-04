@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { isAdminAuthenticated } from "@/lib/admin";
 import { AdminLoginForm } from "@/components/AdminLoginForm";
+import { AdminLogoutButton } from "@/components/AdminLogoutButton";
 
 export default async function AdminLayout({
   children,
@@ -23,12 +24,13 @@ export default async function AdminLayout({
             <p className="text-xs uppercase tracking-[0.18em] text-neutral-500">Get Outside</p>
             <h1 className="text-lg font-semibold">Admin</h1>
           </div>
-          <nav className="flex flex-wrap gap-4 text-sm font-medium">
+          <nav className="flex flex-wrap items-center gap-4 text-sm font-medium">
             <Link href="/admin">Funnel</Link>
             <Link href="/admin/activities">Activities</Link>
             <Link href="/admin/creatives">Creatives</Link>
             <Link href="/admin/social">Social</Link>
             <Link href="/">Public site</Link>
+            <AdminLogoutButton />
           </nav>
         </div>
       </header>
