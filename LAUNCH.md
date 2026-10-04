@@ -111,6 +111,7 @@ docker compose up -d
 |---|---|
 | Composited ad / OG images | `next/og` (`ImageResponse`) — see `/api/og/creative/[slug]` |
 | AI captions / headlines | [Vercel AI SDK](https://github.com/vercel/ai) + `@ai-sdk/openai-compatible` (point `CONTENT_AI_BASE_URL` at your API) |
+| Editorial news | Free RSS + DB cache (`NewsItem` / `NewsFeedCache`); admin sync with TTL |
 | Admin session | httpOnly cookie (no token in client HTML) |
 | Product analytics | [PostHog JS](https://github.com/PostHog/posthog-js) (optional env) |
 | CI | GitHub Actions — `.github/workflows/ci.yml` |
@@ -126,7 +127,8 @@ docker compose up -d
 - [ ] UTM’d `/api/go/<slug>` links used in Meta
 - [ ] Funnel shows impressions → clicks → landing → affiliate
 - [ ] First small Meta test (£50–100) against 1–2 Scotland escapes
+- [ ] (Optional) Sync RSS in `/admin/news`; confirm Outside briefing relevance before promoting `/news`
 
 ## 7. What not to build yet
 
-Full marketplace, user accounts, payments, on-site booking, multi-region catalog, recommendation engines, social auto-posting APIs.
+Full marketplace, user accounts, payments, on-site booking, multi-region catalog, recommendation engines, social auto-posting APIs, news-shaped ad creatives, partner CRM.

@@ -15,6 +15,8 @@ Tracked funnel:
 3. Landing page view (`/escape/[slug]`)
 4. Affiliate outbound click (`/api/affiliate/[id]`)
 
+Editorial news (Outside briefing) is separate: `news_impression` → `news_click` via `/api/news/go/[id]`, with optional soft links into escapes.
+
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
@@ -123,9 +125,20 @@ pnpm build
 pnpm test:e2e
 ```
 
+## Outside briefing (RSS news)
+
+Cached Scotland/outdoors RSS for theme-building — never fetched on page view.
+
+- Public: `/` (below escapes) and `/news`
+- Admin: `/admin/news` — Sync feeds (TTL) / Force refresh, publish/hide
+- Env: `NEWS_RSS_FEEDS`, `NEWS_SYNC_TTL_HOURS` (default 6), `NEWS_MAX_ITEMS`
+- Sync: `POST /api/news/sync` with optional `{ "force": true }`
+
+Seed includes sample briefing items so local demos work offline.
+
 ## Brand
 
-See **[BRAND.md](BRAND.md)** for voice, theme, colour, type, and creative rules so ads, social, and landing pages stay consistent.
+See **[BRAND.md](BRAND.md)** for voice, theme, colour, type, creative rules, the news experiment checklist, and a future partner playbook.
 
 ## Launch
 

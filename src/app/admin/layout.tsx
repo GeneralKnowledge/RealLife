@@ -29,6 +29,7 @@ export default async function AdminLayout({
             <Link href="/admin/activities">Activities</Link>
             <Link href="/admin/creatives">Creatives</Link>
             <Link href="/admin/social">Social</Link>
+            <Link href="/admin/news">News</Link>
             <Link href="/">Public site</Link>
             <AdminLogoutButton />
           </nav>

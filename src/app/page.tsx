@@ -1,15 +1,20 @@
 import Link from "next/link";
+import { NewsBriefing } from "@/components/NewsBriefing";
 import { prisma } from "@/lib/db";
+import { listPublishedNewsWithRelated } from "@/lib/news";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const creatives = await prisma.creative.findMany({
-    where: { status: "published" },
-    include: { activity: true },
-    orderBy: { createdAt: "desc" },
-    take: 3,
-  });
+  const [creatives, newsItems] = await Promise.all([
+    prisma.creative.findMany({
+      where: { status: "published" },
+      include: { activity: true },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+    }),
+    listPublishedNewsWithRelated(5),
+  ]);
 
   const featured = creatives[0];
 
@@ -32,12 +37,20 @@ export default async function HomePage() {
             <p className="display text-2xl tracking-[0.08em] text-[var(--accent-strong)] md:text-3xl">
               GET OUTSIDE
             </p>
-            <Link
-              href="/admin"
-              className="text-xs uppercase tracking-[0.2em] text-white/70 transition hover:text-white"
-            >
-              Admin
-            </Link>
+            <div className="flex items-center gap-5">
+              <Link
+                href="/news"
+                className="text-xs uppercase tracking-[0.2em] text-white/70 transition hover:text-white"
+              >
+                Briefing
+              </Link>
+              <Link
+                href="/admin"
+                className="text-xs uppercase tracking-[0.2em] text-white/70 transition hover:text-white"
+              >
+                Admin
+              </Link>
+            </div>
           </header>
 
           <div className="mt-auto max-w-3xl space-y-6 pb-8">
@@ -93,6 +106,8 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      <NewsBriefing items={newsItems} impressionSurface="home" />
     </main>
   );
 }

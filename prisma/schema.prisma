@@ -98,3 +98,41 @@ model Event {
   @@index([activityId])
   @@index([createdAt])
 }
+
+model NewsItem {
+  id          String   @id @default(cuid())
+  source      String
+  externalId  String
+  title       String
+  summary     String   @default("")
+  url         String
+  imageUrl    String?
+  publishedAt DateTime
+  tags        String   @default("[]")
+  region      String   @default("Scotland")
+  status      String   @default("draft")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([source, externalId])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([source])
+}
+
+model NewsFeedCache {
+  id           String   @id @default(cuid())
+  feedUrl      String   @unique
+  source       String
+  etag         String?
+  lastModified String?
+  fetchedAt    DateTime?
+  expiresAt    DateTime?
+  lastStatus   String   @default("never")
+  rawHash      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([source])
+  @@index([expiresAt])
+}

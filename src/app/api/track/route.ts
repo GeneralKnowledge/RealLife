@@ -8,6 +8,8 @@ const bodySchema = z.object({
     "creative_click",
     "landing_view",
     "affiliate_click",
+    "news_impression",
+    "news_click",
   ]),
   creativeId: z.string().max(64).optional(),
   activityId: z.string().max(64).optional(),

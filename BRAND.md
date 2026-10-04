@@ -149,6 +149,28 @@ If a line could sit on any outdoor brand after you remove “Scotland” and the
 
 ---
 
+## Outside briefing (news experiment)
+
+Editorial Scotland/outdoors RSS lives **below the fold** on `/` and `/news`. Public pages read the DB only; feeds sync on an admin TTL (default 6h).
+
+| Signal | Keep the experiment if… |
+|---|---|
+| Relevance | ~70%+ of published items feel on-theme |
+| Noise | Politics/crime/weather fluff isn’t dominating (tighten filters / hide in admin) |
+| Engagement | Non-zero `news_click`; soft “Nearby escape” doesn’t wreck affiliate CTR |
+| Ops | Sync reliable; bad items easy to hide |
+
+**Later (not built):** news-shaped stories that look like briefing posts but deep-link to creatives.
+
+**Later — direct brand connects (playbook only):**
+
+- Targets: outdoor gear, whisky, tourism boards, local guides (beyond Viator)
+- Offer: themed briefing sponsorship, Escape of the week co-brand, tracked outbound
+- Ops: inbound `partners@` / Notion CRM outside the app first; in-product later = partner lead + sponsored flag
+- UI reserve: one non-hero **Partner spotlight** slot — never in the first viewport
+
+---
+
 ## Quick checklist
 
 - [ ] `GET OUTSIDE` visible as brand, not decoration
@@ -158,3 +180,4 @@ If a line could sit on any outdoor brand after you remove “Scotland” and the
 - [ ] Dark forest + gold; Archivo Black + Manrope
 - [ ] Full-bleed real place image; no hero clutter
 - [ ] Affiliate path obvious — we send people out to book
+- [ ] News stays below the fold; no hero clutter from briefing
