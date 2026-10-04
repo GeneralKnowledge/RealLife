@@ -19,8 +19,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
     }
 
-    const creative = await createCreativeFromActivity(parsed.data.activityId);
-    return NextResponse.json({ creative });
+    const result = await createCreativeFromActivity(parsed.data.activityId);
+    return NextResponse.json({
+      creative: result.creative,
+      contentMode: result.contentMode,
+      socialMode: result.socialMode,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create creative";
     return NextResponse.json({ error: message }, { status: 500 });

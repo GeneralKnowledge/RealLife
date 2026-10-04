@@ -23,10 +23,12 @@ export async function POST(request: Request) {
     }
 
     if (!parsed.data.creativeId && parsed.data.activityId) {
-      const creative = await createCreativeFromActivity(parsed.data.activityId);
+      const result = await createCreativeFromActivity(parsed.data.activityId);
       return NextResponse.json({
-        creative,
-        socialPosts: creative.socialPosts,
+        creative: result.creative,
+        socialPosts: result.creative.socialPosts,
+        contentMode: result.contentMode,
+        socialMode: result.socialMode,
       });
     }
 
@@ -44,8 +46,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Creative not found" }, { status: 404 });
     }
 
-    const socialPosts = await generateSocialPostsForCreative(parsed.data.creativeId);
-    return NextResponse.json({ creativeId: parsed.data.creativeId, socialPosts });
+    const { posts, mode } = await generateSocialPostsForCreative(parsed.data.creativeId);
+    return NextResponse.json({
+      creativeId: parsed.data.creativeId,
+      socialPosts: posts,
+      socialMode: mode,
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to generate social posts";
     return NextResponse.json({ error: message }, { status: 500 });

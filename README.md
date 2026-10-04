@@ -91,7 +91,16 @@ Every creative gets an automatic multi-platform pack:
 - Facebook
 - TikTok
 
-Captions use the Get Outside voice, include price/location, hashtags, and the tracked CTA link. Regenerate anytime from Admin → Social or a creative detail page.
+By default captions use templates. Point an **OpenAI-compatible** Chat Completions API at the app to upgrade headlines + captions:
+
+```bash
+CONTENT_AI_BASE_URL=https://your-api.example/v1
+CONTENT_AI_API_KEY=...          # optional for local proxies
+CONTENT_AI_MODEL=gpt-4o-mini
+# or Ollama: CONTENT_AI_BASE_URL=http://127.0.0.1:11434/v1 CONTENT_AI_MODEL=llama3.2
+```
+
+When the model call fails, generation falls back to templates. Regenerate anytime from Admin → Social or a creative detail page.
 
 ## Tests
 

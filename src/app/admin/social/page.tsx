@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GenerateSocialButton } from "@/components/GenerateSocialButton";
 import { SocialPostCard } from "@/components/SocialPostCard";
+import { getContentAiConfig, isContentAiEnabled } from "@/lib/content-ai";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,8 @@ export default async function AdminSocialPage() {
   });
 
   const totalPosts = creatives.reduce((sum, creative) => sum + creative.socialPosts.length, 0);
+  const aiEnabled = isContentAiEnabled();
+  const aiConfig = getContentAiConfig();
 
   return (
     <div className="space-y-8">
@@ -25,6 +28,11 @@ export default async function AdminSocialPage() {
           <p className="mt-1 text-sm text-neutral-600">
             Auto-generated captions and visual packs for Instagram, Stories, X, Facebook, and TikTok.
             {` ${totalPosts} posts ready.`}
+          </p>
+          <p className="mt-2 text-xs text-neutral-500">
+            {aiEnabled
+              ? `Content AI on · ${aiConfig.model} via ${aiConfig.baseURL}`
+              : "Content AI off · using templates. Set CONTENT_AI_BASE_URL to point at your OpenAI-compatible API."}
           </p>
         </div>
         <Link href="/admin/activities" className="text-sm underline">
