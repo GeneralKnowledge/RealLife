@@ -17,6 +17,12 @@ export default async function AdminFunnelPage() {
     { label: "Affiliate clicks", value: stats.affiliateClicks },
   ];
 
+  const newsCards = [
+    { label: "News impressions", value: stats.newsImpressions },
+    { label: "News clicks", value: stats.newsClicks },
+    { label: "News CTR", value: pct(stats.newsClickThroughRate) },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
@@ -47,6 +53,28 @@ export default async function AdminFunnelPage() {
         <div className="rounded-xl border border-neutral-200 bg-white p-5">
           <p className="text-xs uppercase tracking-[0.14em] text-neutral-500">Landing → affiliate</p>
           <p className="mt-2 text-2xl font-semibold">{pct(stats.affiliateConversionRate)}</p>
+        </div>
+      </div>
+
+      <div>
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold tracking-tight">News</h3>
+            <p className="mt-1 text-sm text-neutral-600">
+              Outside briefing engagement from the cached RSS experiment.{" "}
+              <Link href="/admin/news" className="underline">
+                Manage news
+              </Link>
+            </p>
+          </div>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {newsCards.map((card) => (
+            <div key={card.label} className="rounded-xl border border-neutral-200 bg-white p-5">
+              <p className="text-xs uppercase tracking-[0.14em] text-neutral-500">{card.label}</p>
+              <p className="mt-2 text-3xl font-semibold">{card.value}</p>
+            </div>
+          ))}
         </div>
       </div>
 

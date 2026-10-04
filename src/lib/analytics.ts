@@ -4,7 +4,9 @@ export type EventType =
   | "creative_impression"
   | "creative_click"
   | "landing_view"
-  | "affiliate_click";
+  | "affiliate_click"
+  | "news_impression"
+  | "news_click";
 
 export async function trackEvent(input: {
   type: EventType;
@@ -27,6 +29,9 @@ export type FunnelStats = {
   creativeClicks: number;
   landingViews: number;
   affiliateClicks: number;
+  newsImpressions: number;
+  newsClicks: number;
+  newsClickThroughRate: number;
   clickThroughRate: number;
   landingConversionRate: number;
   affiliateConversionRate: number;
@@ -63,6 +68,8 @@ export async function getFunnelStats(): Promise<FunnelStats> {
   const creativeClicks = countMap.creative_click ?? 0;
   const landingViews = countMap.landing_view ?? 0;
   const affiliateClicks = countMap.affiliate_click ?? 0;
+  const newsImpressions = countMap.news_impression ?? 0;
+  const newsClicks = countMap.news_click ?? 0;
 
   const byCreative = creatives.map((creative) => {
     const related = events.filter((event) => event.creativeId === creative.id);
@@ -82,6 +89,9 @@ export async function getFunnelStats(): Promise<FunnelStats> {
     creativeClicks,
     landingViews,
     affiliateClicks,
+    newsImpressions,
+    newsClicks,
+    newsClickThroughRate: newsImpressions === 0 ? 0 : newsClicks / newsImpressions,
     clickThroughRate: creativeImpressions === 0 ? 0 : creativeClicks / creativeImpressions,
     landingConversionRate: creativeClicks === 0 ? 0 : landingViews / creativeClicks,
     affiliateConversionRate: landingViews === 0 ? 0 : affiliateClicks / landingViews,
