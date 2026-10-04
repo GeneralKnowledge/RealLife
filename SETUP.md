@@ -205,11 +205,7 @@ Install Playwright browsers once if needed: `pnpm exec playwright install`.
 
 ## Stage 9 — Production / paid traffic
 
-<<<<<<< HEAD
-Do **not** treat local FreeLLMAPI as a public production service.
-=======
-Use the same OpenRouter (or OpenAI) `CONTENT_AI_*` values on Vercel — not local FreeLLMAPI. For deploy, domains, Neon/Supabase, Vercel, Meta ads, and the pre-paid checklist, follow **[LAUNCH.md](LAUNCH.md)**.
->>>>>>> origin/main
+Use the same OpenRouter (or OpenAI) `CONTENT_AI_*` values on Vercel — not local FreeLLMAPI.
 
 - **Backend deploy (Vercel + Neon):** **[DEPLOY.md](DEPLOY.md)**
 - **Accounts, domains, paid-traffic checklist:** **[LAUNCH.md](LAUNCH.md)**

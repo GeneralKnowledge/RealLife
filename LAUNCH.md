@@ -74,16 +74,6 @@ NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 NEXT_PUBLIC_META_PIXEL_ID=
 
-<<<<<<< HEAD
-# Content AI — use a managed OpenAI-compatible API in production (not localhost FreeLLMAPI)
-CONTENT_AI_BASE_URL=https://api.openai.com/v1
-CONTENT_AI_API_KEY=
-CONTENT_AI_MODEL=gpt-4o-mini
-CONTENT_AI_STRUCTURED_OUTPUTS=true
-```
-
-Local FreeLLMAPI bootstrap: `pnpm llm:setup` (see SETUP.md). Do not point Vercel at `127.0.0.1:3001`.
-=======
 # Content AI — OpenRouter (recommended); upgrade to OpenAI by swapping BASE_URL/MODEL/key
 CONTENT_AI_BASE_URL=https://openrouter.ai/api/v1
 CONTENT_AI_API_KEY=
@@ -95,7 +85,6 @@ CONTENT_AI_STRUCTURED_OUTPUTS=true
 ```
 
 Same OpenRouter key works locally and on Vercel (see SETUP.md Stage 5). Do not point production at `127.0.0.1` FreeLLMAPI.
->>>>>>> origin/main
 
 ## 4. Deploy (Vercel + Postgres)
 
