@@ -19,7 +19,7 @@ Do these first (free tiers are enough to start):
 | [Viator Partners](https://partners.viator.com) | Live Scotland inventory + affiliate links |
 | Domain registrar (Cloudflare / Porkbun / Namecheap) | Custom domain (can wait until Stage 6) |
 
-Optional later: PostHog, Meta Pixel, OpenAI/OpenRouter for production content AI.
+Optional later: PostHog, Meta Pixel, OpenRouter (content AI; OpenAI upgrade path).
 
 Generate a strong admin secret now:
 
@@ -189,12 +189,12 @@ Production content AI (optional — templates work without it):
 
 | Name | Notes |
 |---|---|
-| `CONTENT_AI_BASE_URL` | Managed API, e.g. `https://api.openai.com/v1` or OpenRouter |
-| `CONTENT_AI_API_KEY` | Provider secret |
-| `CONTENT_AI_MODEL` | e.g. `gpt-4o-mini` |
-| `CONTENT_AI_STRUCTURED_OUTPUTS` | `true` for OpenAI; `false` for many free routers |
+| `CONTENT_AI_BASE_URL` | `https://openrouter.ai/api/v1` (recommended) |
+| `CONTENT_AI_API_KEY` | OpenRouter key from https://openrouter.ai/keys |
+| `CONTENT_AI_MODEL` | e.g. `openai/gpt-4o-mini` |
+| `CONTENT_AI_STRUCTURED_OUTPUTS` | `true` for OpenRouter/OpenAI |
 
-**Do not** set `CONTENT_AI_BASE_URL` to `http://127.0.0.1:3001/v1` on Vercel — FreeLLMAPI is local-only. Run a private host or use a managed OpenAI-compatible API.
+**Do not** set `CONTENT_AI_BASE_URL` to `http://127.0.0.1:3001/v1` on Vercel — use OpenRouter (or upgrade to OpenAI).
 
 Full template (copy/paste into notes, then fill in Vercel UI):
 
@@ -211,10 +211,11 @@ ACTIVITY_PROVIDER=mock
 # VIATOR_AFFILIATE_ID=
 # VIATOR_API_BASE_URL=https://api.viator.com/partner
 # VIATOR_DESTINATION_ID=22
-# CONTENT_AI_BASE_URL=https://api.openai.com/v1
+# CONTENT_AI_BASE_URL=https://openrouter.ai/api/v1
 # CONTENT_AI_API_KEY=
-# CONTENT_AI_MODEL=gpt-4o-mini
+# CONTENT_AI_MODEL=openai/gpt-4o-mini
 # CONTENT_AI_STRUCTURED_OUTPUTS=true
+# OpenAI upgrade: BASE_URL=https://api.openai.com/v1 MODEL=gpt-4o-mini
 # NEXT_PUBLIC_POSTHOG_KEY=
 # NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 # NEXT_PUBLIC_META_PIXEL_ID=
@@ -297,10 +298,11 @@ curl -X POST https://your-domain/api/sync \
 
 Templates still work with no AI. For AI headlines/captions on Vercel:
 
-1. Create an OpenAI or OpenRouter key (or any OpenAI-compatible host you control).
-2. Set `CONTENT_AI_*` in Vercel (Stage 5 table).
+1. Create an [OpenRouter](https://openrouter.ai/keys) key (recommended — same key works locally and across projects).
+2. Set `CONTENT_AI_*` in Vercel (Stage 5 table) to the OpenRouter values.
 3. Redeploy; generate a creative or regenerate Social from admin.
-4. If the model call fails, the app falls back to templates automatically.
+4. To upgrade later to OpenAI, swap `CONTENT_AI_BASE_URL` / `CONTENT_AI_API_KEY` / `CONTENT_AI_MODEL` only (see `.env.example`).
+5. If the model call fails, the app falls back to templates automatically.
 
 ## Stage 10 — Verify before paid traffic
 
@@ -337,4 +339,4 @@ Browser / ads
         → OpenAI-compatible content API (optional)
 ```
 
-FreeLLMAPI + SQLite remain **local development** tools ([SETUP.md](SETUP.md)). They are not the production backend.
+SQLite and optional local FreeLLMAPI remain **local development** tools ([SETUP.md](SETUP.md)). Production content AI should be OpenRouter (or OpenAI).
