@@ -3,7 +3,8 @@
 Use this to go from local MVP to a real Scotland ads test.
 Success metric: **landing → affiliate click rate** (and paid CPA to outbound click).
 
-For first-time local install, start with **[SETUP.md](SETUP.md)**.
+For first-time local install, start with **[SETUP.md](SETUP.md)**.  
+For Vercel + Neon/Supabase (staged), follow **[DEPLOY.md](DEPLOY.md)**.
 
 ## 1. Accounts to open
 
@@ -57,8 +58,9 @@ Tracked ad URLs:
 NEXT_PUBLIC_APP_URL=https://your-domain
 ADMIN_TOKEN=<long-random-secret>
 
-# Database (Neon/Supabase). Switch prisma schema provider to postgresql first.
-DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+# Database (Neon/Supabase). Switch prisma schema provider to postgresql first — see DEPLOY.md.
+DATABASE_URL=postgresql://user:pass@host-pooler/db?sslmode=require
+DIRECT_URL=postgresql://user:pass@host/db?sslmode=require
 
 # Provider
 ACTIVITY_PROVIDER=viator
@@ -86,29 +88,16 @@ Same OpenRouter key works locally and on Vercel (see SETUP.md Stage 5). Do not p
 
 ## 4. Deploy (Vercel + Postgres)
 
-1. Create Neon/Supabase Postgres and copy `DATABASE_URL`.
-2. In [`prisma/schema.prisma`](prisma/schema.prisma), set:
-   ```prisma
-   datasource db {
-     provider = "postgresql"
-     url      = env("DATABASE_URL")
-   }
-   ```
-   (Local default remains `sqlite` until you switch.)
-3. Run migrations against Postgres:
-   ```bash
-   pnpm exec prisma migrate deploy
-   pnpm db:seed   # optional sample Scotland data; or sync from Viator in admin
-   ```
-4. Import the GitHub repo into Vercel.
-5. Add all env vars from the template.
-6. Deploy. Confirm `/`, `/admin`, and `/escape/<slug>` work on the custom domain.
+Step-by-step (Prisma Postgres switch, Neon pooled/`DIRECT_URL`, Vercel env, domain, Viator): **[DEPLOY.md](DEPLOY.md)**.
 
-Local Postgres alternative:
-```bash
-docker compose up -d
-# then point DATABASE_URL at localhost and use provider = postgresql
-```
+Short version:
+
+1. Create Neon/Supabase Postgres; copy **pooled** → `DATABASE_URL` and **direct** → `DIRECT_URL`.
+2. Switch [`prisma/schema.prisma`](prisma/schema.prisma) to `provider = "postgresql"` (+ `directUrl`) and **replace SQLite migrations** with Postgres ones (see DEPLOY.md Stage 2 — required before Vercel `migrate deploy` works).
+3. Apply migrations / optional seed against Neon, then import the repo into Vercel and set env vars from the template above (and DEPLOY.md Stage 5).
+4. Deploy. Confirm `/`, `/admin`, and `/escape/<slug>` on the deployment URL, then attach your domain.
+
+Local Postgres alternative: `docker compose --profile postgres up -d` (see SETUP.md Stage 7).
 
 ## 5. OSS upgrades we lean on
 

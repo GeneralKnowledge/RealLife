@@ -133,13 +133,17 @@ pnpm test:e2e
 
 See **[BRAND.md](BRAND.md)** for voice, theme, colour, type, and creative rules so ads, social, and landing pages stay consistent.
 
-## Launch
+## Launch / deploy
 
-See **[SETUP.md](SETUP.md)** for local stages and **[LAUNCH.md](LAUNCH.md)** for accounts, domain shortlist, Vercel + Postgres deploy, and the pre-paid-traffic checklist.
+| Doc | Use when |
+|---|---|
+| **[SETUP.md](SETUP.md)** | Local install (SQLite, optional FreeLLMAPI) |
+| **[DEPLOY.md](DEPLOY.md)** | Production backend: Vercel + Neon/Supabase, env vars, domain, Viator |
+| **[LAUNCH.md](LAUNCH.md)** | Accounts, domain shortlist, pre-paid-traffic checklist |
 
 ## Notes
 
 - No auth product, payments, or in-app booking — affiliate handoff only
 - Additional providers can implement `ActivityProvider` without changing the UI
-- SQLite for local; Postgres (Neon/Supabase) for production — see LAUNCH.md
+- SQLite for local; Postgres (Neon/Supabase) for production — see [DEPLOY.md](DEPLOY.md)
 - Admin APIs authenticate via httpOnly session cookie (no token in client HTML)

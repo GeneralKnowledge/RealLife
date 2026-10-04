@@ -205,9 +205,11 @@ Install Playwright browsers once if needed: `pnpm exec playwright install`.
 
 ## Stage 9 — Production / paid traffic
 
-Use the same OpenRouter (or OpenAI) `CONTENT_AI_*` values on Vercel — not local FreeLLMAPI. For deploy, domains, Neon/Supabase, Vercel, Meta ads, and the pre-paid checklist, follow **[LAUNCH.md](LAUNCH.md)**.
+Use the same OpenRouter (or OpenAI) `CONTENT_AI_*` values on Vercel — not local FreeLLMAPI.
 
-Brand voice and creative rules: **[BRAND.md](BRAND.md)**.
+- **Backend deploy (Vercel + Neon):** **[DEPLOY.md](DEPLOY.md)**
+- **Accounts, domains, paid-traffic checklist:** **[LAUNCH.md](LAUNCH.md)**
+- **Brand voice / creative rules:** **[BRAND.md](BRAND.md)**
 
 ---
 
@@ -219,4 +221,5 @@ Brand voice and creative rules: **[BRAND.md](BRAND.md)**.
 | + AI social captions (OpenRouter) | + 5 |
 | + Real Viator inventory | + 6 |
 | + Local Postgres | + 7 |
-| Ship / ads test | → [LAUNCH.md](LAUNCH.md) |
+| Production backend | → [DEPLOY.md](DEPLOY.md) |
+| Paid ads readiness | → [LAUNCH.md](LAUNCH.md) |
