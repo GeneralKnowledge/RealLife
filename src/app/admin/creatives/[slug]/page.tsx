@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { GenerateSocialButton } from "@/components/GenerateSocialButton";
+import { SocialPostCard } from "@/components/SocialPostCard";
+import { getExpectedAdminToken } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import { appUrl } from "@/lib/creatives";
 
@@ -13,13 +16,18 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const creative = await prisma.creative.findUnique({
     where: { slug },
-    include: { activity: true, events: true },
+    include: {
+      activity: true,
+      events: true,
+      socialPosts: { orderBy: { platform: "asc" } },
+    },
   });
 
   if (!creative) {
     notFound();
   }
 
+  const adminToken = getExpectedAdminToken();
   const counts = {
     impressions: creative.events.filter((event) => event.type === "creative_impression").length,
     clicks: creative.events.filter((event) => event.type === "creative_click").length,
@@ -29,12 +37,19 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Link href="/admin/creatives" className="text-sm text-neutral-500 underline">
-          ← Creatives
-        </Link>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight">{creative.headline}</h2>
-        <p className="text-sm text-neutral-600">{creative.activity.title}</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <Link href="/admin/creatives" className="text-sm text-neutral-500 underline">
+            ← Creatives
+          </Link>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight">{creative.headline}</h2>
+          <p className="text-sm text-neutral-600">{creative.activity.title}</p>
+        </div>
+        <GenerateSocialButton
+          adminToken={adminToken}
+          creativeId={creative.id}
+          label={creative.socialPosts.length > 0 ? "Regenerate social pack" : "Generate social pack"}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -94,6 +109,35 @@ export default async function AdminCreativeDetailPage({ params }: PageProps) {
           </div>
         </div>
       </div>
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold">Social pack</h3>
+          <Link href="/admin/social" className="text-sm underline">
+            All social content
+          </Link>
+        </div>
+        {creative.socialPosts.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-neutral-300 bg-white px-4 py-6 text-sm text-neutral-500">
+            No social posts yet. Generate a pack to get Instagram, X, Facebook, and TikTok copy.
+          </p>
+        ) : (
+          <div className="grid gap-4">
+            {creative.socialPosts.map((post) => (
+              <SocialPostCard
+                key={post.id}
+                platform={post.platform}
+                format={post.format}
+                caption={post.caption}
+                hashtags={post.hashtags}
+                ctaLabel={post.ctaLabel}
+                ctaUrl={post.ctaUrl}
+                imageUrl={post.imageUrl}
+              />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -54,11 +54,33 @@ model Creative {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
-  events   Event[]
+  activity    Activity     @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  events      Event[]
+  socialPosts SocialPost[]
 
   @@index([activityId])
   @@index([status])
+}
+
+model SocialPost {
+  id         String   @id @default(cuid())
+  creativeId String
+  platform   String
+  format     String
+  caption    String
+  hashtags   String   @default("")
+  ctaLabel   String
+  ctaUrl     String
+  imageUrl   String
+  status     String   @default("ready")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  creative Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+
+  @@index([creativeId])
+  @@index([platform])
+  @@unique([creativeId, platform, format])
 }
 
 model Event {

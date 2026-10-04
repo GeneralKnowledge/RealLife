@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { ActivityFilters } from "@/components/ActivityFilters";
 import { GenerateCreativeButton } from "@/components/GenerateCreativeButton";
+import { GenerateSocialButton } from "@/components/GenerateSocialButton";
 import { SyncButton } from "@/components/SyncButton";
 import { listActivities } from "@/lib/activities";
 import { getExpectedAdminToken } from "@/lib/admin";
@@ -94,7 +95,14 @@ export default async function AdminActivitiesPage({ searchParams }: PageProps) {
                     {activity.rating ? activity.rating.toFixed(1) : "—"}
                   </td>
                   <td className="px-4 py-3">
-                    <GenerateCreativeButton activityId={activity.id} adminToken={adminToken} />
+                    <div className="flex flex-col gap-2">
+                      <GenerateCreativeButton activityId={activity.id} adminToken={adminToken} />
+                      <GenerateSocialButton
+                        activityId={activity.id}
+                        adminToken={adminToken}
+                        label="Creative + social"
+                      />
+                    </div>
                   </td>
                 </tr>
               ))

@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { mockActivities } from "../src/lib/providers/mock";
 import { buildCreativeDraft } from "../src/lib/creatives";
+import { generateSocialPostsForCreative } from "../src/lib/social";
 
 const prisma = new PrismaClient();
 
@@ -59,24 +60,29 @@ async function main() {
   });
 
   for (const activity of featured) {
-    const existing = await prisma.creative.findFirst({
+    let creative = await prisma.creative.findFirst({
       where: { activityId: activity.id },
     });
-    if (existing) continue;
 
-    const draft = buildCreativeDraft(activity);
-    const slugBase = activity.location.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-    await prisma.creative.create({
-      data: {
-        slug: `${slugBase}-escape`,
-        activityId: activity.id,
-        ...draft,
-        status: "published",
-      },
-    });
+    if (!creative) {
+      const draft = buildCreativeDraft(activity);
+      const slugBase = activity.location.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      creative = await prisma.creative.create({
+        data: {
+          slug: `${slugBase}-escape`,
+          activityId: activity.id,
+          ...draft,
+          status: "published",
+        },
+      });
+    }
+
+    await generateSocialPostsForCreative(creative.id);
   }
 
-  console.log(`Seeded ${mockActivities.length} Scotland activities and sample creatives.`);
+  console.log(
+    `Seeded ${mockActivities.length} Scotland activities, sample creatives, and social packs.`,
+  );
 }
 
 main()

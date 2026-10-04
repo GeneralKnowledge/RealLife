@@ -27,6 +27,7 @@ export default async function AdminLayout({
             <Link href="/admin">Funnel</Link>
             <Link href="/admin/activities">Activities</Link>
             <Link href="/admin/creatives">Creatives</Link>
+            <Link href="/admin/social">Social</Link>
             <Link href="/">Public site</Link>
           </nav>
         </div>

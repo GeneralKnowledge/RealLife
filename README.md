@@ -68,9 +68,21 @@ curl -X POST http://localhost:3000/api/sync \
 1. Log in with `ADMIN_TOKEN`
 2. Sync / browse Scotland activities
 3. Filter by location, type, price, duration, rating
-4. Generate a creative
-5. Share `/c/[slug]` (ad preview) or `/api/go/[slug]` (tracked click)
-6. Watch funnel stats on `/admin`
+4. Generate a creative (also auto-builds a social pack)
+5. Open **Social** to copy Instagram / Story / X / Facebook / TikTok captions
+6. Share `/c/[slug]` (ad preview) or `/api/go/[slug]` (tracked click)
+7. Watch funnel stats on `/admin`
+
+### Social content generation
+
+Every creative gets an automatic multi-platform pack:
+
+- Instagram feed + story
+- X / Twitter (length-capped)
+- Facebook
+- TikTok
+
+Captions use the Get Outside voice, include price/location, hashtags, and the tracked CTA link. Regenerate anytime from Admin → Social or a creative detail page.
 
 ## Tests
 

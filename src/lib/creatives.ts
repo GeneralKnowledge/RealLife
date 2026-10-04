@@ -1,6 +1,7 @@
 import { customAlphabet } from "nanoid";
 import type { Activity as DbActivity } from "@prisma/client";
 import { prisma } from "./db";
+import { generateSocialPostsForCreative } from "./social";
 
 const slugId = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 8);
 
@@ -72,7 +73,7 @@ export async function createCreativeFromActivity(activityId: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-  return prisma.creative.create({
+  const creative = await prisma.creative.create({
     data: {
       slug: `${base || "escape"}-${slugId()}`,
       activityId: activity.id,
@@ -80,6 +81,13 @@ export async function createCreativeFromActivity(activityId: string) {
       status: "published",
     },
     include: { activity: true },
+  });
+
+  await generateSocialPostsForCreative(creative.id);
+
+  return prisma.creative.findUniqueOrThrow({
+    where: { id: creative.id },
+    include: { activity: true, socialPosts: true },
   });
 }
 
