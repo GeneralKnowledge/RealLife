@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Smoke-test the configured CONTENT_AI_* OpenAI-compatible endpoint
- * (typically local FreeLLMAPI at http://127.0.0.1:3001/v1).
+ * (recommended: OpenRouter; also works with OpenAI or local FreeLLMAPI).
  */
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -30,10 +30,17 @@ loadDotEnv(resolve(process.cwd(), ".env"));
 
 const baseURL = (process.env.CONTENT_AI_BASE_URL ?? "").replace(/\/+$/, "");
 const apiKey = (process.env.CONTENT_AI_API_KEY ?? "").trim();
-const model = (process.env.CONTENT_AI_MODEL ?? "auto:cheap").trim();
+const model = (process.env.CONTENT_AI_MODEL ?? "openai/gpt-4o-mini").trim();
 
 if (!baseURL) {
-  console.error("CONTENT_AI_BASE_URL is not set. Run: pnpm llm:setup");
+  console.error(
+    "CONTENT_AI_BASE_URL is not set. Example: https://openrouter.ai/api/v1 (see .env.example)",
+  );
+  process.exit(1);
+}
+
+if (!apiKey && !baseURL.includes("127.0.0.1") && !baseURL.includes("localhost")) {
+  console.error("CONTENT_AI_API_KEY is not set (required for OpenRouter / OpenAI).");
   process.exit(1);
 }
 
@@ -87,4 +94,4 @@ try {
 
 console.log(`Chat OK via model=${model}${routedVia ? ` routed=${routedVia}` : ""}`);
 console.log(`Reply: ${String(content).slice(0, 200)}`);
-console.log("FreeLLMAPI / content AI smoke test passed.");
+console.log("Content AI smoke test passed.");

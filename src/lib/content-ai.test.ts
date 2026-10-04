@@ -44,11 +44,11 @@ describe("getContentAiConfig", () => {
     expect(config.supportsStructuredOutputs).toBe(false);
   });
 
-  it("defaults model to auto:cheap for FreeLLMAPI-style routers", () => {
+  it("defaults model to openai/gpt-4o-mini (OpenRouter-style id)", () => {
     for (const key of KEYS) delete process.env[key];
-    process.env.CONTENT_AI_BASE_URL = "http://127.0.0.1:3001/v1";
+    process.env.CONTENT_AI_BASE_URL = "https://openrouter.ai/api/v1";
 
-    expect(getContentAiConfig().model).toBe("auto:cheap");
+    expect(getContentAiConfig().model).toBe("openai/gpt-4o-mini");
   });
 
   it("keeps api key when provided", () => {
