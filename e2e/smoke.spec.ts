@@ -16,6 +16,6 @@ test("admin login and funnel page", async ({ page }) => {
 test("landing page tracks through to affiliate redirect endpoint", async ({ page }) => {
   await page.goto("/escape/cairngorms-escape");
   await expect(page.getByText("GET OUTSIDE").first()).toBeVisible();
-  const book = page.getByRole("link", { name: /PLAN THE ESCAPE|GET OUTSIDE/i }).first();
+  const book = page.getByRole("link", { name: /PLAN THE ESCAPE/i });
   await expect(book).toHaveAttribute("href", /\/api\/affiliate\//);
 });
