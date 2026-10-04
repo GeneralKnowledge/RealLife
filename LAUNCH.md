@@ -69,6 +69,11 @@ VIATOR_DESTINATION_ID=22
 NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 NEXT_PUBLIC_META_PIXEL_ID=
+
+# Optional content AI (OpenAI-compatible — your own proxy / Ollama / OpenRouter / OpenAI)
+CONTENT_AI_BASE_URL=
+CONTENT_AI_API_KEY=
+CONTENT_AI_MODEL=gpt-4o-mini
 ```
 
 ## 4. Deploy (Vercel + Postgres)
@@ -102,6 +107,7 @@ docker compose up -d
 | Need | Building block |
 |---|---|
 | Composited ad / OG images | `next/og` (`ImageResponse`) — see `/api/og/creative/[slug]` |
+| AI captions / headlines | [Vercel AI SDK](https://github.com/vercel/ai) + `@ai-sdk/openai-compatible` (point `CONTENT_AI_BASE_URL` at your API) |
 | Admin session | httpOnly cookie (no token in client HTML) |
 | Product analytics | [PostHog JS](https://github.com/PostHog/posthog-js) (optional env) |
 | CI | GitHub Actions — `.github/workflows/ci.yml` |

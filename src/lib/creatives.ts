@@ -1,5 +1,10 @@
 import { customAlphabet } from "nanoid";
 import type { Activity as DbActivity } from "@prisma/client";
+import {
+  generateCreativeCopyWithAi,
+  isContentAiEnabled,
+  type ContentAiMode,
+} from "./content-ai";
 import { prisma } from "./db";
 import { generateSocialPostsForCreative } from "./social";
 
@@ -45,7 +50,16 @@ function formatDuration(minutes: number | null): string | null {
   return hours === 1 ? "1 hour" : `${hours} hours`;
 }
 
-export function buildCreativeDraft(activity: DbActivity) {
+export type CreativeDraft = {
+  headline: string;
+  subheadline: string;
+  ctaLabel: string;
+  locationLine: string;
+  priceLine: string;
+  imageUrl: string;
+};
+
+export function buildCreativeDraft(activity: DbActivity): CreativeDraft {
   const headline = pickHeadline(activity.id + activity.title);
   const price = formatPrice(activity.priceFrom, activity.currency);
   const duration = formatDuration(activity.durationMinutes);
@@ -63,13 +77,39 @@ export function buildCreativeDraft(activity: DbActivity) {
   };
 }
 
+export async function resolveCreativeDraft(
+  activity: DbActivity,
+): Promise<{ draft: CreativeDraft; mode: ContentAiMode }> {
+  const template = buildCreativeDraft(activity);
+
+  if (!isContentAiEnabled()) {
+    return { draft: template, mode: "template" };
+  }
+
+  try {
+    const ai = await generateCreativeCopyWithAi(activity);
+    return {
+      draft: {
+        ...template,
+        headline: ai.headline.trim() || template.headline,
+        subheadline: ai.subheadline.trim() || template.subheadline,
+        ctaLabel: ai.ctaLabel.trim() || template.ctaLabel,
+      },
+      mode: "ai",
+    };
+  } catch (error) {
+    console.error("Content AI creative generation failed; using template", error);
+    return { draft: template, mode: "template" };
+  }
+}
+
 export async function createCreativeFromActivity(activityId: string) {
   const activity = await prisma.activity.findUnique({ where: { id: activityId } });
   if (!activity) {
     throw new Error("Activity not found");
   }
 
-  const draft = buildCreativeDraft(activity);
+  const { draft, mode } = await resolveCreativeDraft(activity);
   const base = activity.location
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -85,10 +125,16 @@ export async function createCreativeFromActivity(activityId: string) {
     include: { activity: true },
   });
 
-  await generateSocialPostsForCreative(creative.id);
+  const social = await generateSocialPostsForCreative(creative.id);
 
-  return prisma.creative.findUniqueOrThrow({
+  const creativeWithPosts = await prisma.creative.findUniqueOrThrow({
     where: { id: creative.id },
     include: { activity: true, socialPosts: true },
   });
+
+  return {
+    creative: creativeWithPosts,
+    contentMode: mode,
+    socialMode: social.mode,
+  };
 }

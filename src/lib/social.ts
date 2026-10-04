@@ -1,4 +1,9 @@
-import type { Activity as DbActivity, Creative } from "@prisma/client";
+import type { Activity as DbActivity, Creative, SocialPost } from "@prisma/client";
+import {
+  generateSocialPackWithAi,
+  isContentAiEnabled,
+  type ContentAiMode,
+} from "./content-ai";
 import { prisma } from "./db";
 import { platformUtm, trackedGoUrl } from "./urls";
 
@@ -168,6 +173,41 @@ export function buildSocialPack(
   }));
 }
 
+export async function resolveSocialPack(
+  creative: Creative,
+  activity: DbActivity,
+): Promise<{ drafts: SocialPostDraft[]; mode: ContentAiMode }> {
+  if (!isContentAiEnabled()) {
+    return { drafts: buildSocialPack(creative, activity), mode: "template" };
+  }
+
+  try {
+    const aiDrafts = await generateSocialPackWithAi(creative, activity);
+    const formats: Record<SocialPlatform, SocialPostDraft["format"]> = {
+      instagram: "square",
+      instagram_story: "story",
+      x: "feed",
+      facebook: "feed",
+      tiktok: "story",
+    };
+
+    const drafts = aiDrafts.map((draft) => ({
+      platform: draft.platform,
+      format: formats[draft.platform],
+      caption: trimToLimit(draft.caption, PLATFORM_META[draft.platform].maxCaption),
+      hashtags: draft.hashtags,
+      ctaLabel: draft.ctaLabel,
+      ctaUrl: trackedGoUrl(creative.slug, platformUtm(draft.platform)),
+      imageUrl: creative.imageUrl,
+    }));
+
+    return { drafts, mode: "ai" };
+  } catch (error) {
+    console.error("Content AI social generation failed; using template", error);
+    return { drafts: buildSocialPack(creative, activity), mode: "template" };
+  }
+}
+
 export function platformLabel(platform: string): string {
   if (platform in PLATFORM_META) {
     return PLATFORM_META[platform as SocialPlatform].label;
@@ -175,7 +215,9 @@ export function platformLabel(platform: string): string {
   return platform;
 }
 
-export async function generateSocialPostsForCreative(creativeId: string) {
+export async function generateSocialPostsForCreative(
+  creativeId: string,
+): Promise<{ posts: SocialPost[]; mode: ContentAiMode }> {
   const creative = await prisma.creative.findUnique({
     where: { id: creativeId },
     include: { activity: true },
@@ -185,8 +227,8 @@ export async function generateSocialPostsForCreative(creativeId: string) {
     throw new Error("Creative not found");
   }
 
-  const drafts = buildSocialPack(creative, creative.activity);
-  const posts = [];
+  const { drafts, mode } = await resolveSocialPack(creative, creative.activity);
+  const posts: SocialPost[] = [];
 
   for (const draft of drafts) {
     const post = await prisma.socialPost.upsert({
@@ -220,5 +262,5 @@ export async function generateSocialPostsForCreative(creativeId: string) {
     posts.push(post);
   }
 
-  return posts;
+  return { posts, mode };
 }
