@@ -51,8 +51,8 @@ export function parseRssFeedsEnv(raw: string | undefined): NewsFeedConfig[] {
         source: "bbc-scotland",
       },
       {
-        url: "https://www.ukhillwalking.com/rss.xml",
-        source: "ukhillwalking",
+        url: "https://www.theguardian.com/uk/scotland/rss",
+        source: "guardian-scotland",
       },
     ];
   }

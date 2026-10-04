@@ -125,10 +125,11 @@ describe("news helpers", () => {
 
   it("parses NEWS_RSS_FEEDS env", () => {
     const feeds = parseRssFeedsEnv(
-      "https://feeds.bbci.co.uk/news/scotland/rss.xml|bbc-scotland,https://www.ukhillwalking.com/rss.xml|ukhillwalking",
+      "https://feeds.bbci.co.uk/news/scotland/rss.xml|bbc-scotland,https://www.theguardian.com/uk/scotland/rss|guardian-scotland",
     );
     expect(feeds).toHaveLength(2);
     expect(feeds[0]?.source).toBe("bbc-scotland");
+    expect(feeds[1]?.source).toBe("guardian-scotland");
   });
 
   it("matches theme keywords and related escapes", () => {
