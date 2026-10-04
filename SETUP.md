@@ -198,9 +198,11 @@ Install Playwright browsers once if needed: `pnpm exec playwright install`.
 
 ## Stage 9 — Production / paid traffic
 
-Do **not** treat local FreeLLMAPI as a public production service. For deploy, domains, Neon/Supabase, Vercel, Meta ads, and the pre-paid checklist, follow **[LAUNCH.md](LAUNCH.md)**.
+Do **not** treat local FreeLLMAPI as a public production service.
 
-Brand voice and creative rules: **[BRAND.md](BRAND.md)**.
+- **Backend deploy (Vercel + Neon):** **[DEPLOY.md](DEPLOY.md)**
+- **Accounts, domains, paid-traffic checklist:** **[LAUNCH.md](LAUNCH.md)**
+- **Brand voice / creative rules:** **[BRAND.md](BRAND.md)**
 
 ---
 
@@ -212,4 +214,5 @@ Brand voice and creative rules: **[BRAND.md](BRAND.md)**.
 | + AI social captions | + 5 |
 | + Real Viator inventory | + 6 |
 | + Local Postgres | + 7 |
-| Ship / ads test | → [LAUNCH.md](LAUNCH.md) |
+| Production backend | → [DEPLOY.md](DEPLOY.md) |
+| Paid ads readiness | → [LAUNCH.md](LAUNCH.md) |
