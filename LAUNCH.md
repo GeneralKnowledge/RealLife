@@ -58,8 +58,9 @@ Tracked ad URLs:
 NEXT_PUBLIC_APP_URL=https://your-domain
 ADMIN_TOKEN=<long-random-secret>
 
-# Database (Neon/Supabase). Switch prisma schema provider to postgresql first.
-DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+# Database (Neon/Supabase). Switch prisma schema provider to postgresql first — see DEPLOY.md.
+DATABASE_URL=postgresql://user:pass@host-pooler/db?sslmode=require
+DIRECT_URL=postgresql://user:pass@host/db?sslmode=require
 
 # Provider
 ACTIVITY_PROVIDER=viator
@@ -73,14 +74,14 @@ NEXT_PUBLIC_POSTHOG_KEY=
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
 NEXT_PUBLIC_META_PIXEL_ID=
 
-# Content AI — local FreeLLMAPI for cheap tests; paid OpenAI/OpenRouter in prod if you prefer
-CONTENT_AI_BASE_URL=http://127.0.0.1:3001/v1
-CONTENT_AI_API_KEY=freellmapi-...
-CONTENT_AI_MODEL=auto:cheap
-CONTENT_AI_STRUCTURED_OUTPUTS=false
+# Content AI — use a managed OpenAI-compatible API in production (not localhost FreeLLMAPI)
+CONTENT_AI_BASE_URL=https://api.openai.com/v1
+CONTENT_AI_API_KEY=
+CONTENT_AI_MODEL=gpt-4o-mini
+CONTENT_AI_STRUCTURED_OUTPUTS=true
 ```
 
-Local FreeLLMAPI bootstrap: `pnpm llm:setup` (see README). Do not expose FreeLLMAPI publicly in production — run it on a private host or swap to a managed API.
+Local FreeLLMAPI bootstrap: `pnpm llm:setup` (see SETUP.md). Do not point Vercel at `127.0.0.1:3001`.
 
 ## 4. Deploy (Vercel + Postgres)
 
